@@ -24,6 +24,9 @@ public class Sample {
 
     public static void Main ( string[] args )
     {
+        // Register code page provider for encodings like CP866
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
         int hostHandle = VixApi.VIX_INVALID_HANDLE;
         int vmHandle = VixApi.VIX_INVALID_HANDLE;
         int jobHandle = VixApi.VIX_INVALID_HANDLE;
@@ -118,11 +121,11 @@ public class Sample {
 
             Console.WriteLine ( $"DEBUG: GuestPassword: '{new string('*', GuestPassword.Length)}'" ); // Mask password for security
 
-            Console.WriteLine ( "Executing 'whoami' in guest OS and redirecting output..." );
+            Console.WriteLine ( "Executing 'whoami /priv' in guest OS and redirecting output..." );
             jobHandle = VixApi.VixVM_RunProgramInGuest (
                             vmHandle,
                             "cmd.exe", // Program to run
-                            $"/c whoami > {GuestCommandOutputPath}", // Arguments: /c to execute command and redirect output
+                            $"/c whoami /priv > {GuestCommandOutputPath}", // Arguments: /c to execute command and redirect output
                             VixApi.VixRunProgramOptions.ReturnImmediately, // Options: ReturnImmediately for console app
                             VixApi.VIX_INVALID_HANDLE, // PropertyListHandle
                             JobCallback,
@@ -138,7 +141,7 @@ public class Sample {
             }
             else
             {
-                Console.WriteLine ( $"Command 'whoami' executed successfully in guest. Output redirected to {GuestCommandOutputPath}." );
+                Console.WriteLine ( $"Command 'whoami /priv' executed successfully in guest. Output redirected to {GuestCommandOutputPath}." );
 
                 // Add a small delay to ensure file is written
                 Console.WriteLine ( "Waiting for 2 seconds for guest to write the output file..." );
@@ -189,12 +192,13 @@ public class Sample {
                         // Read the output from the copied file
                         try
                         {
-                            string commandOutput = System.IO.File.ReadAllText ( HostCommandOutputPath );
-                            Console.WriteLine ( $"Command Output:\n{commandOutput}" );
+                            // Use CP866 encoding for Russian console output
+                            string commandOutput = System.IO.File.ReadAllText(HostCommandOutputPath, System.Text.Encoding.GetEncoding(866));
+                            Console.WriteLine($"Command Output:\n{commandOutput}");
                         }
-                        catch ( Exception ex )
+                        catch (Exception ex)
                         {
-                            Console.WriteLine ( $"Error reading command output file on host: {ex.Message}" );
+                            Console.WriteLine($"Error reading command output file on host: {ex.Message}");
                         }
                     }
                 }
