@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace VixBindings {
@@ -504,8 +504,11 @@ public static class VixApi {
     [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl )]
     public static extern int Vix_GetHandleType ( int handle );
 
-    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl )]
+    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
     public static extern ulong Vix_GetProperties ( int handle, int firstPropertyID /*, ...*/ );
+
+    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
+    public static extern ulong Vix_GetProperties ( int handle, int propertyId, out IntPtr value, int terminator );
 
     [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl )]
     public static extern ulong Vix_GetPropertyType ( int handle, int propertyID, out int propertyType );
@@ -692,6 +695,12 @@ public static class VixApi {
     [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
     public static extern ulong VixJob_GetNthProperties ( int jobHandle, int index, int propertyID /*, ...*/ );
 
+    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
+    public static extern ulong VixJob_GetNthProperties ( int jobHandle, int index, int propertyId, out IntPtr value, int terminator );
+
+    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
+    public static extern ulong VixJob_GetNthProperties ( int jobHandle, int index, int propertyId, out int value, int terminator );
+
     // Snapshot tree functions
     [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
     public static extern ulong VixSnapshot_GetNumChildren ( int parentSnapshotHandle, out int numChildSnapshots );
@@ -702,14 +711,14 @@ public static class VixApi {
     [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
     public static extern ulong VixSnapshot_GetParent ( int snapshotHandle, out int parentSnapshotHandle );
 
-    [DllImport(VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern ulong VixJob_Wait(int jobHandle, int firstPropertyID, out int resultHandle, int terminator);
+    [DllImport ( VixDll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi )]
+    public static extern ulong VixJob_Wait ( int jobHandle, int firstPropertyID, out int resultHandle, int terminator );
 
-    private static int GetJobResultHandle(int jobHandle)
+    private static int GetJobResultHandle ( int jobHandle )
     {
         int resultHandle = VixApi.VIX_INVALID_HANDLE;
-        ulong err = VixApi.VixJob_Wait(jobHandle, VixApi.VIX_PROPERTY_JOB_RESULT_HANDLE, out resultHandle, VixApi.VIX_PROPERTY_NONE);
-        if (VixApi.VIX_OK == err)
+        ulong err = VixApi.VixJob_Wait ( jobHandle, VixApi.VIX_PROPERTY_JOB_RESULT_HANDLE, out resultHandle, VixApi.VIX_PROPERTY_NONE );
+        if ( VixApi.VIX_OK == err )
         {
             return resultHandle;
         }
