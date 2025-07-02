@@ -1,0 +1,1 @@
+ [![Crafted in 🛠 C#](https://a.b-b.top/badge.svg?repo=vixapi-csharp-bindings&label=Crafted%20in%20🛠%20C%23&background_color=3f51b5&background_color2=5c6bc0&utm_source=github&utm_medium=readme&utm_campaign=badge)](https://a.b-b.top) 
